@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Csharp2024ExamAssignment", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Resources", "Resources\Resources.csproj", "{20CB106D-CF36-4FE2-AA3A-D7EA08628937}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Resources.Tests", "Resources.Tests\Resources.Tests.csproj", "{8E929B70-C9A0-424B-857C-5EFFB2A25B3A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Resources.Tests", "Resources.Tests\Resources.Tests.csproj", "{CF6254A0-E78F-4722-AC76-F4F14D5C65ED}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +23,10 @@ Global
 		{20CB106D-CF36-4FE2-AA3A-D7EA08628937}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{20CB106D-CF36-4FE2-AA3A-D7EA08628937}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{20CB106D-CF36-4FE2-AA3A-D7EA08628937}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8E929B70-C9A0-424B-857C-5EFFB2A25B3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8E929B70-C9A0-424B-857C-5EFFB2A25B3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8E929B70-C9A0-424B-857C-5EFFB2A25B3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8E929B70-C9A0-424B-857C-5EFFB2A25B3A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF6254A0-E78F-4722-AC76-F4F14D5C65ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF6254A0-E78F-4722-AC76-F4F14D5C65ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF6254A0-E78F-4722-AC76-F4F14D5C65ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF6254A0-E78F-4722-AC76-F4F14D5C65ED}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
