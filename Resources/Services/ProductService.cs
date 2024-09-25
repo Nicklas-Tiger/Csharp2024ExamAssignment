@@ -14,13 +14,12 @@ public class ProductService : IProductService<Product, Product>
     {
         _fileService = fileService;
         _products = [];
-        GetAllProducts();
     }
 
     //CREATE
     public ResponseResult<Product> CreateProduct(Product product)
     {
-        if (product == null || string.IsNullOrEmpty(product.ProductId))
+        if (string.IsNullOrEmpty(product.ProductId))
         {
             return new ResponseResult<Product> { Success = false, Message = "Invalid product information." };
         }
@@ -52,6 +51,7 @@ public class ProductService : IProductService<Product, Product>
         try
         {
             var result = _fileService.GetFromFile();
+
             if (result.Success)
             {
                 _products = JsonConvert.DeserializeObject<List<Product>>(result.Result!)!;
@@ -92,16 +92,15 @@ public class ProductService : IProductService<Product, Product>
             return new ResponseResult<IEnumerable<Product>> { Success = false, Message = ex.Message };
         }
     }
-
-
-        //UPDATE
+    //UPDATE
     public ResponseResult<Product> UpdateProduct(string id, Product updatedProduct)
     {
         throw new NotImplementedException();
     }
-        //DELETE
+    //DELETE
     public ResponseResult<Product> DeleteProduct(string id)
     {
         throw new NotImplementedException();
     }
+
 }

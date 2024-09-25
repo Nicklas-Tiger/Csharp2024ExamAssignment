@@ -3,10 +3,13 @@ using Resources.Models;
 
 namespace Resources.Services;
 
-public class FileService(string filePath) : IFileService
+public class FileService : IFileService
 {
-    private readonly string _filePath = filePath;
-
+    private readonly string _filePath;
+    public FileService(string filePath = @"C:\projects\products.json")
+    {
+        _filePath = filePath;
+    }
     public ResponseResult<string> GetFromFile()
     {
         try
