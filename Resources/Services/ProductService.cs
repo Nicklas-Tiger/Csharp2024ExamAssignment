@@ -26,18 +26,18 @@ public class ProductService : IProductService<Product, Product>
 
         try
         {
-            if (!_products.Any(x => x.ProductId == product.ProductId))
+            if (!_products.Any(x => x.ProductName == product.ProductName))
             {
                 _products.Add(product);
                 var json = JsonConvert.SerializeObject(_products);
                 var result = _fileService.SaveToFile(json);
 
                 if (result.Success)
-                    return new ResponseResult<Product> { Success = true, Message = "Product was added successfully!", Result = product };
+                    return new ResponseResult<Product> { Success = true, Message = "Product was added successfully!\n", Result = product };
                 else
-                    return new ResponseResult<Product> { Success = false, Message = "Product was not added successfully!" };
+                    return new ResponseResult<Product> { Success = false, Message = "Product was not added successfully!\n" };
             }
-                return new ResponseResult<Product> { Success = false, Message = "Product with the same ID already exists!" };
+                return new ResponseResult<Product> { Success = false, Message = "Product with the same name already exists!\n" };
         }
         catch (Exception ex)
         {
@@ -50,11 +50,11 @@ public class ProductService : IProductService<Product, Product>
     {
         try
         {
-            var result = _fileService.GetFromFile();
+            var content = _fileService.GetFromFile();
 
-            if (result.Success)
+            if (content.Success)
             {
-                _products = JsonConvert.DeserializeObject<List<Product>>(result.Result!)!;
+                _products = JsonConvert.DeserializeObject<List<Product>>(content.Result!)!;
                 var product = _products.FirstOrDefault(x => x.ProductName == name);
                 if (product != null)
                 {
@@ -66,7 +66,7 @@ public class ProductService : IProductService<Product, Product>
                 }
             }
             else
-                return new ResponseResult<Product> { Success = false, Message = result.Message };
+                return new ResponseResult<Product> { Success = false, Message = content.Message };
         }
         catch (Exception ex)
         {
@@ -78,14 +78,14 @@ public class ProductService : IProductService<Product, Product>
     {
         try
         {
-            var result = _fileService.GetFromFile();
-            if (result.Success)
+            var content = _fileService.GetFromFile();
+            if (content.Success)
             {
-                _products = JsonConvert.DeserializeObject<List<Product>>(result.Result!)!;
-                return new ResponseResult<IEnumerable<Product>> { Success = true };
+                _products = JsonConvert.DeserializeObject<List<Product>>(content.Result!)!;
+                return new ResponseResult<IEnumerable<Product>> { Success = true, Result = _products};
             }
             else
-                return new ResponseResult<IEnumerable<Product>> { Success = false, Message = result.Message };
+                return new ResponseResult<IEnumerable<Product>> { Success = false, Message = content.Message };
         }
         catch (Exception ex)
         {

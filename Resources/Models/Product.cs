@@ -1,4 +1,6 @@
-﻿namespace Resources.Models;
+﻿using System.Diagnostics;
+
+namespace Resources.Models;
 
 public class Product
 {
@@ -7,6 +9,5 @@ public class Product
     public string ProductName { get; set; } = null!;
     public Category ProductCategory { get; set; } = null!;
     public decimal? Price { get; set; }
-
-    public string FullProductName => $"{ProductName} {ProductCategory} {Price}";
+  
 }
