@@ -13,7 +13,7 @@ public class Menu
         while (true) 
         {
             Console.Clear();
-            Console.WriteLine("WELCOME TO THE PRODUCTMENU\n");
+            Console.WriteLine("== WELCOME TO THE PRODUCTMENU == \n");
             Console.WriteLine("1. Create a product");
             Console.WriteLine("2. Show all products");
             Console.WriteLine("3. Update a product");
@@ -42,7 +42,7 @@ public class Menu
                     _productMenu.ShowAllProducts();
                     break;
                 case 3:
-                   
+                    _productMenu.ShowOneProduct();
                     break;
                 case 4:
                    

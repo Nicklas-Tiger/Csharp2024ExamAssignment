@@ -9,12 +9,15 @@ public class ProductService : IProductService<Product, Product>
 {
     private readonly IFileService _fileService;
     private List<Product> _products;
+    private List<Product> _productList = new List<Product>();
+
 
     public ProductService(IFileService fileService)
     {
         _fileService = fileService;
-        _products = [];
+        _products = new List<Product>();
     }
+
 
     //CREATE
     public ResponseResult<Product> CreateProduct(Product product)
@@ -26,11 +29,14 @@ public class ProductService : IProductService<Product, Product>
 
         try
         {
+            GetProductsFromFile();
+
             if (!_products.Any(x => x.ProductName == product.ProductName))
             {
                 _products.Add(product);
                 var json = JsonConvert.SerializeObject(_products);
                 var result = _fileService.SaveToFile(json);
+
 
                 if (result.Success)
                     return new ResponseResult<Product> { Success = true, Message = "Product was added successfully!\n", Result = product };
@@ -45,57 +51,79 @@ public class ProductService : IProductService<Product, Product>
 
         }
     }
-        //READ
-    public ResponseResult<Product> GetOneProduct(string name)
-    {
-        try
-        {
-            var content = _fileService.GetFromFile();
 
-            if (content.Success)
-            {
-                _products = JsonConvert.DeserializeObject<List<Product>>(content.Result!)!;
-                var product = _products.FirstOrDefault(x => x.ProductName == name);
-                if (product != null)
-                {
-                    return new ResponseResult<Product> { Success = true, Result = product };
-                }
-                else
-                {
-                    return new ResponseResult<Product> { Success = false, Message = "Product not found!" };
-                }
-            }
-            else
-                return new ResponseResult<Product> { Success = false, Message = content.Message };
-        }
-        catch (Exception ex)
+    //READ
+
+    public ResponseResult<List<Product>> GetProductsFromFile()
+    {
+        var content = _fileService.GetFromFile();
+        if (content.Success)
         {
-            return new ResponseResult<Product> { Success = false, Message = ex.Message };
+            try
+            {
+                var products = JsonConvert.DeserializeObject<List<Product>>(content.Result!)!;
+                return new ResponseResult<List<Product>> { Success = true, Result = products };
+            }
+            catch (Exception ex)
+            {
+                return new ResponseResult<List<Product>> { Success = false, Message = ex.Message };
+            }
         }
-    }
+        else
+        {
+            return new ResponseResult<List<Product>> { Success = false, Message = content.Message };
+        }
+    }   
 
     public ResponseResult<IEnumerable<Product>> GetAllProducts()
     {
-        try
+        GetProductsFromFile();
+
+        var response = GetProductsFromFile();
+        if (response.Success)
         {
-            var content = _fileService.GetFromFile();
-            if (content.Success)
-            {
-                _products = JsonConvert.DeserializeObject<List<Product>>(content.Result!)!;
-                return new ResponseResult<IEnumerable<Product>> { Success = true, Result = _products};
-            }
-            else
-                return new ResponseResult<IEnumerable<Product>> { Success = false, Message = content.Message };
+            return new ResponseResult<IEnumerable<Product>> { Success = true, Result = response.Result };
         }
-        catch (Exception ex)
+        else
         {
-            return new ResponseResult<IEnumerable<Product>> { Success = false, Message = ex.Message };
+            return new ResponseResult<IEnumerable<Product>> { Success = false, Message = response.Message };
         }
     }
     //UPDATE
     public ResponseResult<Product> UpdateProduct(string id, Product updatedProduct)
     {
-        throw new NotImplementedException();
+        var response = GetProductsFromFile();
+        if (response.Success)
+        {
+            var existingProduct = response.Result!.FirstOrDefault(x => x.ProductId == id);
+            if (existingProduct != null)
+            {
+                existingProduct.ProductName = updatedProduct.ProductName;
+                existingProduct.Price = updatedProduct.Price;
+                existingProduct.ProductCategory = updatedProduct.ProductCategory;
+                existingProduct.ProductDescription = updatedProduct.ProductDescription;
+
+                var json = JsonConvert.SerializeObject(response.Result);
+                var result = _fileService.SaveToFile(json);
+
+                if (result.Success)
+                {
+                    return new ResponseResult<Product> { Success = true, Message = "Product updated successfully", Result = existingProduct };
+                }
+                else
+                {
+                    return new ResponseResult<Product> { Success = false, Message = "Failed to update product." };
+                }
+            }
+            else
+            {
+                return new ResponseResult<Product> { Success = false, Message = "Product not found." };
+            }
+        }
+        else
+        {
+            return new ResponseResult<Product> { Success = false, Message = response.Message };
+        }
     }
     //DELETE
     public ResponseResult<Product> DeleteProduct(string id)
