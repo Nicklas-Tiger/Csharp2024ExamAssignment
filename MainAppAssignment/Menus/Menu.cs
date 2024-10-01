@@ -45,7 +45,7 @@ public class Menu
                     _productMenu.ShowOneProduct();
                     break;
                 case 4:
-                   
+                    _productMenu.DeleteProduct();
                     break;
                 case 0:
                     Environment.Exit(0);

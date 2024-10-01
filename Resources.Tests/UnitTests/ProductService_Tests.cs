@@ -29,7 +29,6 @@ namespace Resources.Tests.UnitTests
                     Price = 100,
                     ProductCategory = new Category
                     {
-                        Id = Guid.NewGuid().ToString(),
                         Name = "Skrivare"
                     }
                 };

@@ -9,7 +9,7 @@ public class ProductService : IProductService<Product, Product>
 {
     private readonly IFileService _fileService;
     private List<Product> _products;
-    private List<Product> _productList = new List<Product>();
+
 
 
     public ProductService(IFileService fileService)

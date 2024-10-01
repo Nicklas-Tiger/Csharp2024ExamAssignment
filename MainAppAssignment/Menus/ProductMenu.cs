@@ -147,5 +147,9 @@ public class ProductMenu
         Console.WriteLine("Press any key to continue...");
     }
 
+    public void DeleteProduct()
+    {
+        throw new NotImplementedException();
+    }
 }
 
