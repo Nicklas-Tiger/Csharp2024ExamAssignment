@@ -3,6 +3,7 @@ using Resources.Services;
 using Resources.Interfaces;
 using System.ComponentModel.Design;
 using System.Diagnostics;
+using System.Threading.Channels;
 
 namespace MainAppAssignment.Menus;
 
@@ -15,7 +16,7 @@ public class ProductMenu
 
     public ProductMenu()
     {
-        _fileService = new FileService(); 
+        _fileService = new FileService();
         _productService = new ProductService(_fileService);
     }
     public void CreateProductMenu()
@@ -77,7 +78,7 @@ public class ProductMenu
         }
         else
             Console.WriteLine("\nNo products found or an error occured!");
-            Console.WriteLine("Press any key to continue");
+        Console.WriteLine("Press any key to continue");
 
     }
 
@@ -93,7 +94,7 @@ public class ProductMenu
 
         if (response.Success && response.Result != null)
         {
-            var productList = response.Result; 
+            var productList = response.Result;
             var productToUpdate = productList.FirstOrDefault(x => x.ProductId == productId);
 
             if (productToUpdate != null)
@@ -143,23 +144,35 @@ public class ProductMenu
     {
         Console.Clear();
         Console.WriteLine("== DELETE A PRODUCT ==");
-        Console.Write("Which product do you want to delete?");
+        Console.WriteLine("Which product do you want to delete?");
         Console.Write("Enter product ID: ");
-        var productId = Console.ReadLine(); 
-
+        var productId = Console.ReadLine();
 
         var response = _productService.GetAllProducts();
 
         if (response.Success && response.Result != null)
         {
             var productList = response.Result;
-            var productToDelete = productList.FirstOrDefault(x => x.ProductId == productId);    
+            var productToDelete = productList.FirstOrDefault(x => x.ProductId == productId);
 
             if (productToDelete != null)
             {
-               
+                var deleteResponse = _productService.DeleteProduct(productId!);
+                if (deleteResponse.Success)
+                    Console.WriteLine("Product has been removed successfully!");
+
+                else
+                    Console.WriteLine("Product has not been removed!");
             }
+            else
+                Console.WriteLine("Product not found. Please check the Product ID and try again.");
         }
+        else
+            Console.WriteLine("Something went wrong. Could not retrieve the productlist.");
+
+        Console.WriteLine("Press any key to continue");
+       
     }
+    
 }
 
