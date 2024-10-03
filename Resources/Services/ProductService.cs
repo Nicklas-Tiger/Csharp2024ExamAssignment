@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Resources.Interfaces;
 using Resources.Models;
+using System.Reflection.Metadata.Ecma335;
 
 
 namespace Resources.Services;
@@ -29,7 +30,7 @@ public class ProductService : IProductService<Product, Product>
 
         try
         {
-            GetProductsFromFile();
+            GetAllProducts();
 
             if (!_products.Any(x => x.ProductName == product.ProductName))
             {
@@ -54,7 +55,7 @@ public class ProductService : IProductService<Product, Product>
 
     //READ
 
-    public ResponseResult<List<Product>> GetProductsFromFile()
+    public ResponseResult<IEnumerable<Product>> GetAllProducts()
     {
         var content = _fileService.GetFromFile();
         if (content.Success)
@@ -62,37 +63,23 @@ public class ProductService : IProductService<Product, Product>
             try
             {
                 var products = JsonConvert.DeserializeObject<List<Product>>(content.Result!)!;
-                return new ResponseResult<List<Product>> { Success = true, Result = products };
+                return new ResponseResult<IEnumerable<Product>> { Success = true, Result = products };
             }
             catch (Exception ex)
             {
-                return new ResponseResult<List<Product>> { Success = false, Message = ex.Message };
+                return new ResponseResult<IEnumerable<Product>> { Success = false, Message = ex.Message };
             }
         }
         else
         {
-            return new ResponseResult<List<Product>> { Success = false, Message = content.Message };
-        }
-    }   
-
-    public ResponseResult<IEnumerable<Product>> GetAllProducts()
-    {
-        GetProductsFromFile();
-
-        var response = GetProductsFromFile();
-        if (response.Success)
-        {
-            return new ResponseResult<IEnumerable<Product>> { Success = true, Result = response.Result };
-        }
-        else
-        {
-            return new ResponseResult<IEnumerable<Product>> { Success = false, Message = response.Message };
+            return new ResponseResult<IEnumerable<Product>> { Success = false, Message = content.Message };
         }
     }
+
     //UPDATE
     public ResponseResult<Product> UpdateProduct(string id, Product updatedProduct)
     {
-        var response = GetProductsFromFile();
+        var response = GetAllProducts();
         if (response.Success)
         {
             var existingProduct = response.Result!.FirstOrDefault(x => x.ProductId == id);
@@ -107,28 +94,41 @@ public class ProductService : IProductService<Product, Product>
                 var result = _fileService.SaveToFile(json);
 
                 if (result.Success)
-                {
                     return new ResponseResult<Product> { Success = true, Message = "Product updated successfully", Result = existingProduct };
-                }
                 else
-                {
                     return new ResponseResult<Product> { Success = false, Message = "Failed to update product." };
-                }
             }
             else
-            {
                 return new ResponseResult<Product> { Success = false, Message = "Product not found." };
-            }
         }
         else
-        {
             return new ResponseResult<Product> { Success = false, Message = response.Message };
-        }
     }
     //DELETE
     public ResponseResult<Product> DeleteProduct(string id)
     {
-        throw new NotImplementedException();
-    }
+        var response = GetAllProducts();
+        if (!response.Success)
+            return new ResponseResult<Product> { Success = false, Message = response.Message };
 
+        var productList = response.Result!.ToList();
+        var product = response.Result!.FirstOrDefault(x => x.ProductId == id);
+
+        if (product != null)
+        {
+            productList.Remove(product);
+
+            var json = JsonConvert.SerializeObject(productList);
+            var result = _fileService.SaveToFile(json);
+
+            if (result.Success)
+                return new ResponseResult<Product> { Success = true, Message = "Product removed successfully" };
+        }
+
+        else
+            return new ResponseResult<Product> { Success = false, Message = "Product not found!" };
+
+        return new ResponseResult<Product> { Success = false, Message = response.Message };
+    }
+    
 }

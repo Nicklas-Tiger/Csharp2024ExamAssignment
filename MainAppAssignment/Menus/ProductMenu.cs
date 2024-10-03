@@ -58,14 +58,14 @@ public class ProductMenu
 
     public void ShowAllProducts()
     {
-        var content = _productService.GetAllProducts();
+        var response = _productService.GetAllProducts();
 
         Console.Clear();
         Console.WriteLine("Here is all of our Products!\n");
 
-        if (content.Success && content.Result != null)
+        if (response.Success && response.Result != null)
         {
-            var productList = content.Result;
+            var productList = response.Result;
 
             foreach (Product product in productList)
             {
@@ -89,11 +89,11 @@ public class ProductMenu
         Console.Write("Enter product ID: ");
         var productId = Console.ReadLine()!;
 
-        var content = _productService.GetAllProducts();
+        var response = _productService.GetAllProducts();
 
-        if (content.Success && content.Result != null)
+        if (response.Success && response.Result != null)
         {
-            var productList = content.Result; 
+            var productList = response.Result; 
             var productToUpdate = productList.FirstOrDefault(x => x.ProductId == productId);
 
             if (productToUpdate != null)
@@ -103,53 +103,63 @@ public class ProductMenu
                 Console.Write("Enter new category (or press Enter to keep current): ");
                 var newCategory = Console.ReadLine();
                 if (!string.IsNullOrEmpty(newCategory))
-                {
                     productToUpdate.ProductCategory = new Category { Name = newCategory };
-                }
+
                 Console.WriteLine($"Current product name: {productToUpdate.ProductName}");
                 Console.Write("Enter new product name (or press Enter to keep current): ");
                 var newName = Console.ReadLine();
                 if (!string.IsNullOrEmpty(newName))
-                {
                     productToUpdate.ProductName = newName;
-                }
+
                 Console.WriteLine($"Current product description: {productToUpdate.ProductDescription}");
                 Console.Write("Enter new product description (or press Enter to keep current): ");
                 var newDescription = Console.ReadLine();
                 if (!string.IsNullOrEmpty(newDescription))
-                {
                     productToUpdate.ProductDescription = newDescription;
-                }
+
 
                 Console.WriteLine($"Current price: {productToUpdate.Price}");
                 Console.Write("Enter new price (or press Enter to keep current): ");
                 var newPriceInput = Console.ReadLine();
 
                 if (!string.IsNullOrEmpty(newPriceInput) && decimal.TryParse(newPriceInput, out decimal newPrice))
-                {
                     productToUpdate.Price = newPrice;
-                }
 
                 var updateResponse = _productService.UpdateProduct(productId, productToUpdate);
 
                 Console.WriteLine(updateResponse.Message);
             }
             else
-            {
                 Console.WriteLine("Product not found.");
-            }
         }
         else
-        {
-            Console.WriteLine(content.Message);
-        }
+            Console.WriteLine(response.Message);
+
 
         Console.WriteLine("Press any key to continue...");
     }
 
     public void DeleteProduct()
     {
-        throw new NotImplementedException();
+        Console.Clear();
+        Console.WriteLine("== DELETE A PRODUCT ==");
+        Console.Write("Which product do you want to delete?");
+        Console.Write("Enter product ID: ");
+        var productId = Console.ReadLine(); 
+
+
+        var response = _productService.GetAllProducts();
+
+        if (response.Success && response.Result != null)
+        {
+            var productList = response.Result;
+            var productToDelete = productList.FirstOrDefault(x => x.ProductId == productId);    
+
+            if (productToDelete != null)
+            {
+               
+            }
+        }
     }
 }
 
