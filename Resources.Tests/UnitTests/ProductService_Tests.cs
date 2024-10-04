@@ -17,24 +17,26 @@ namespace Resources.Tests.UnitTests
         public void CreateProduct__ShouldReturnSuccess_WhenProductIsCreated()
         {
                 // Arrange
-                var mockFileService = new Mock<IFileService>();
-                mockFileService.Setup(x => x.SaveToFile(It.IsAny<string>()))
-                               .Returns(new ResponseResult<string> { Success = true });
-
-                var productService = new ProductService(mockFileService.Object);
                 var product = new Product
                 {
                     ProductId = Guid.NewGuid().ToString(),
                     ProductName = "C280",
                     Price = 100,
                     ProductCategory = new Category
-                    {
-                        Name = "Skrivare"
-                    }
+                {
+                    Name = "Skrivare"
+                }
                 };
+                var mockFileService = new Mock<IFileService>();
+                mockFileService.Setup(x => x.SaveToFile(It.IsAny<string>()))
+                           .Returns(new ResponseResult<string> { Success = true, Message = "Product saved successfully!" });
+
+                 _mockproductService.Setup(x => x.GetAllProducts())
+                .Returns(new List<Product>());
+                var productService = new ProductService(mockFileService.Object);
 
                 // Act
-                var result = productService.CreateProduct(product);
+                ResponseResult<Product> result = productService.CreateProduct(product);
 
                 // Assert
                 Assert.True(result.Success);

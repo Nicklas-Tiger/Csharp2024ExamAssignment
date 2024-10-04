@@ -62,11 +62,13 @@ public class ProductMenu
         var response = _productService.GetAllProducts();
 
         Console.Clear();
-        Console.WriteLine("Here is all of our Products!\n");
+        Console.WriteLine("== PRODUCTS ==\n");
 
         if (response.Success && response.Result != null)
         {
             var productList = response.Result;
+
+            if (!productList.Any()) Console.WriteLine("No products available!\n");
 
             foreach (Product product in productList)
             {

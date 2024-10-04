@@ -25,14 +25,15 @@ public class ProductService : IProductService<Product, Product>
     {
         if (string.IsNullOrEmpty(product.ProductId))
         {
-            return new ResponseResult<Product> { Success = false, Message = "Invalid product information." };
+            return new ResponseResult<Product> { Success = false, Message = "\nInvalid product information.\n" };
         }
 
         try
         {
             GetAllProducts();
 
-            if (!_products.Any(x => x.ProductName == product.ProductName))
+            if (!_products.Any(x => x.ProductName == product.ProductName) 
+                   && _products.Any(x => x.ProductId == product.ProductId))
             {
                 _products.Add(product);
                 var json = JsonConvert.SerializeObject(_products);
@@ -40,11 +41,11 @@ public class ProductService : IProductService<Product, Product>
 
 
                 if (result.Success)
-                    return new ResponseResult<Product> { Success = true, Message = "Product was added successfully!\n", Result = product };
+                    return new ResponseResult<Product> { Success = true, Message = "\nProduct was added successfully!\n", Result = product };
                 else
-                    return new ResponseResult<Product> { Success = false, Message = "Product was not added successfully!\n" };
+                    return new ResponseResult<Product> { Success = false, Message = "\nProduct was not added successfully!\n" };
             }
-                return new ResponseResult<Product> { Success = false, Message = "Product with the same name already exists!\n" };
+                return new ResponseResult<Product> { Success = false, Message = "\nProduct with the same name already exists!\n" };
         }
         catch (Exception ex)
         {
@@ -94,12 +95,12 @@ public class ProductService : IProductService<Product, Product>
                 var result = _fileService.SaveToFile(json);
 
                 if (result.Success)
-                    return new ResponseResult<Product> { Success = true, Message = "Product updated successfully", Result = existingProduct };
+                    return new ResponseResult<Product> { Success = true, Message = "\nProduct updated successfully\n", Result = existingProduct };
                 else
-                    return new ResponseResult<Product> { Success = false, Message = "Failed to update product." };
+                    return new ResponseResult<Product> { Success = false, Message = "\nFailed to update product.\n" };
             }
             else
-                return new ResponseResult<Product> { Success = false, Message = "Product not found." };
+                return new ResponseResult<Product> { Success = false, Message = "\nProduct not found.\n" };
         }
         else
             return new ResponseResult<Product> { Success = false, Message = response.Message };
@@ -122,11 +123,11 @@ public class ProductService : IProductService<Product, Product>
             var result = _fileService.SaveToFile(json);
 
             if (result.Success)
-                return new ResponseResult<Product> { Success = true, Message = "Product removed successfully" };
+                return new ResponseResult<Product> { Success = true, Message = "\nProduct removed successfully\n" };
         }
 
         else
-            return new ResponseResult<Product> { Success = false, Message = "Product not found!" };
+            return new ResponseResult<Product> { Success = false, Message = "\nProduct not found!\n" };
 
         return new ResponseResult<Product> { Success = false, Message = response.Message };
     }
