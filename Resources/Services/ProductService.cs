@@ -30,10 +30,14 @@ public class ProductService : IProductService<Product, Product>
 
         try
         {
-            GetAllProducts();
+            var response = GetAllProducts();
+            if (response.Success)
+                _products = response.Result!.ToList();
+            else
+                return new ResponseResult<Product> { Success = false, Message = "\nFailed to load products.\n" };
 
-            if (!_products.Any(x => x.ProductName == product.ProductName) 
-                   && _products.Any(x => x.ProductId == product.ProductId))
+            if (!_products.Any(x => x.ProductName == product.ProductName))
+
             {
                 _products.Add(product);
                 var json = JsonConvert.SerializeObject(_products);
@@ -65,6 +69,7 @@ public class ProductService : IProductService<Product, Product>
             {
                 var products = JsonConvert.DeserializeObject<List<Product>>(content.Result!)!;
                 return new ResponseResult<IEnumerable<Product>> { Success = true, Result = products };
+
             }
             catch (Exception ex)
             {
