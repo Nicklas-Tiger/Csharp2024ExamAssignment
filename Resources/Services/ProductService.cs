@@ -23,6 +23,7 @@ public class ProductService : IProductService<Product, Product>
     //CREATE
     public ResponseResult<Product> CreateProduct(Product product)
     {
+
         if (string.IsNullOrEmpty(product.ProductId))
         {
             return new ResponseResult<Product> { Success = false, Message = "\nInvalid product information.\n" };
@@ -49,11 +50,11 @@ public class ProductService : IProductService<Product, Product>
                 else
                     return new ResponseResult<Product> { Success = false, Message = "\nProduct was not added successfully!\n" };
             }
-                return new ResponseResult<Product> { Success = false, Message = "\nProduct with the same name already exists!\n" };
+            return new ResponseResult<Product> { Success = false, Message = "\nProduct with the same name already exists!\n" };
         }
         catch (Exception ex)
         {
-            return new ResponseResult<Product> { Success = false, Message = ex.Message};
+            return new ResponseResult<Product> { Success = false, Message = ex.Message };
 
         }
     }
@@ -77,64 +78,75 @@ public class ProductService : IProductService<Product, Product>
             }
         }
         else
-        {
             return new ResponseResult<IEnumerable<Product>> { Success = false, Message = content.Message };
-        }
     }
 
     //UPDATE
     public ResponseResult<Product> UpdateProduct(string id, Product updatedProduct)
     {
-        var response = GetAllProducts();
-        if (response.Success)
+        try
         {
-            var existingProduct = response.Result!.FirstOrDefault(x => x.ProductId == id);
-            if (existingProduct != null)
+            var response = GetAllProducts();
+            if (response.Success)
             {
-                existingProduct.ProductName = updatedProduct.ProductName;
-                existingProduct.Price = updatedProduct.Price;
-                existingProduct.ProductCategory = updatedProduct.ProductCategory;
-                existingProduct.ProductDescription = updatedProduct.ProductDescription;
+                var existingProduct = response.Result!.FirstOrDefault(x => x.ProductId == id);
+                if (existingProduct != null)
+                {
+                    existingProduct.ProductName = updatedProduct.ProductName;
+                    existingProduct.Price = updatedProduct.Price;
+                    existingProduct.ProductCategory = updatedProduct.ProductCategory;
+                    existingProduct.ProductDescription = updatedProduct.ProductDescription;
 
-                var json = JsonConvert.SerializeObject(response.Result);
-                var result = _fileService.SaveToFile(json);
+                    var json = JsonConvert.SerializeObject(response.Result);
+                    var result = _fileService.SaveToFile(json);
 
-                if (result.Success)
-                    return new ResponseResult<Product> { Success = true, Message = "\nProduct updated successfully\n", Result = existingProduct };
+                    if (result.Success)
+                        return new ResponseResult<Product> { Success = true, Message = "\nProduct updated successfully\n", Result = existingProduct };
+                    else
+                        return new ResponseResult<Product> { Success = false, Message = "\nFailed to update product.\n" };
+                }
                 else
-                    return new ResponseResult<Product> { Success = false, Message = "\nFailed to update product.\n" };
+                    return new ResponseResult<Product> { Success = false, Message = "\nProduct not found.\n" };
             }
             else
-                return new ResponseResult<Product> { Success = false, Message = "\nProduct not found.\n" };
+                return new ResponseResult<Product> { Success = false, Message = response.Message };
         }
-        else
-            return new ResponseResult<Product> { Success = false, Message = response.Message };
+        catch (Exception ex)
+        {
+            return new ResponseResult<Product> { Success = false, Message = $"\nSomething went wrong: {ex.Message}\n" };
+        }
     }
     //DELETE
     public ResponseResult<Product> DeleteProduct(string id)
     {
-        var response = GetAllProducts();
-        if (!response.Success)
-            return new ResponseResult<Product> { Success = false, Message = response.Message };
-
-        var productList = response.Result!.ToList();
-        var product = response.Result!.FirstOrDefault(x => x.ProductId == id);
-
-        if (product != null)
+        try
         {
-            productList.Remove(product);
+            var response = GetAllProducts();
+            if (!response.Success)
+                return new ResponseResult<Product> { Success = false, Message = response.Message };
 
-            var json = JsonConvert.SerializeObject(productList);
-            var result = _fileService.SaveToFile(json);
+            var productList = response.Result!.ToList();
+            var product = response.Result!.FirstOrDefault(x => x.ProductId == id);
 
-            if (result.Success)
-                return new ResponseResult<Product> { Success = true, Message = "\nProduct removed successfully\n" };
+            if (product != null)
+            {
+                productList.Remove(product);
+
+                var json = JsonConvert.SerializeObject(productList);
+                var result = _fileService.SaveToFile(json);
+
+                if (result.Success)
+                    return new ResponseResult<Product> { Success = true, Message = "\nProduct removed successfully\n" };
+                else
+                    return new ResponseResult<Product> { Success = false, Message = "\nFailed to remove product.\n" };
+            }
+            else
+                return new ResponseResult<Product> { Success = false, Message = "\nProduct not found!\n" };
+        }
+        catch (Exception ex)
+        {
+            return new ResponseResult<Product> { Success = false, Message = $"\nSomething went wrong: {ex.Message}\n" };
         }
 
-        else
-            return new ResponseResult<Product> { Success = false, Message = "\nProduct not found!\n" };
-
-        return new ResponseResult<Product> { Success = false, Message = response.Message };
     }
-    
 }

@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using Resources.Interfaces;
 using Resources.Models;
 using Resources.Services;
-using System;
+
 
 
 
@@ -21,7 +21,7 @@ namespace Resources.Tests.UnitTests
         }
 
         [Fact]
-        public void CreateProduct_ShouldReturnSuccess_WhenProductIsCreated()
+        public void CreateProduct__ShouldReturnSuccess_WhenProductIsCreated()
         {
             // Arrange
             var product = new Product
@@ -36,7 +36,8 @@ namespace Resources.Tests.UnitTests
             };
             var existingProduct = new List<Product>(); 
 
-            _mockFileService.Setup(x => x.SaveToFile(It.IsAny<string>())).Returns(new ResponseResult<string> { Success = true });
+            _mockFileService.Setup(x => x.SaveToFile(It.IsAny<string>())).
+                Returns(new ResponseResult<string> { Success = true });
 
             _mockFileService.Setup(x => x.GetFromFile())
                 .Returns(new ResponseResult<string> { Success = true, Result = JsonConvert.SerializeObject(existingProduct) });
@@ -65,7 +66,8 @@ namespace Resources.Tests.UnitTests
             };
             var existingProduct = new List<Product> { product };
 
-            _mockFileService.Setup(x => x.GetFromFile()).Returns(new ResponseResult<string>{Success = true,Result = JsonConvert.SerializeObject(existingProduct)});
+            _mockFileService.Setup(x => x.GetFromFile())
+                .Returns(new ResponseResult<string>{Success = true,Result = JsonConvert.SerializeObject(existingProduct)});
 
             // Act
             var product2 = new Product
@@ -85,12 +87,51 @@ namespace Resources.Tests.UnitTests
             Assert.False(result.Success);
             Assert.Equal("\nProduct with the same name already exists!\n", result.Message);
 
-            // Assert
         }
+        [Fact]
+        public void CreateProduct__ShouldAddOneToProductCount_WhenProductIsAdded()
+        {
+            // Arrange
+            var existingProduct = new Product
+            {
+                ProductId = Guid.NewGuid().ToString(),
+                ProductName = "C280",
+                Price = 100,
+                ProductCategory = new Category { Name = "Skrivare" }
+            };
 
+            var newProduct = new Product
+            {
+                ProductId = Guid.NewGuid().ToString(),
+                ProductName = "C290",
+                Price = 150,
+                ProductCategory = new Category { Name = "Skrivare" }
+            };
+            var existingProductList = new List<Product> { existingProduct };
 
+            _mockFileService.Setup(x => x.GetFromFile())
+                .Returns(new ResponseResult<string> { Success = true, Result = JsonConvert.SerializeObject(existingProductList) });
 
+            _mockFileService.Setup(x => x.SaveToFile(It.IsAny<string>()))
+                .Returns(new ResponseResult<string> { Success = true });
 
-    }
+            // Act
+            var result = _mockProductService.CreateProduct(newProduct);
+
+            // Assert
+            _mockFileService.Verify(x => x.SaveToFile(It.IsAny<string>()));
+            Assert.True(result.Success);
+            Assert.Equal("\nProduct was added successfully!\n", result.Message);
+
+           
+            existingProductList.Add(newProduct);
+
+            Assert.Equal(2, existingProductList.Count); 
+        }
+        [Fact]
+        public void UpdateProduct_ShouldReturnTrue_WhenProductIsUpdated()
+        {
+
+        }
 }
     
