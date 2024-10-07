@@ -26,15 +26,15 @@ namespace Resources.Tests.UnitTests
             // Arrange
             var product = new Product
             {
-               ProductId = Guid.NewGuid().ToString(),
-               ProductName = "C280",
-               Price = 100,
-               ProductCategory = new Category
-               {
-                   Name = "Skrivare"
-               }
+                ProductId = Guid.NewGuid().ToString(),
+                ProductName = "C280",
+                Price = 100,
+                ProductCategory = new Category
+                {
+                    Name = "Skrivare"
+                }
             };
-            var existingProduct = new List<Product>(); 
+            var existingProduct = new List<Product>();
 
             _mockFileService.Setup(x => x.SaveToFile(It.IsAny<string>())).
                 Returns(new ResponseResult<string> { Success = true });
@@ -67,7 +67,7 @@ namespace Resources.Tests.UnitTests
             var existingProduct = new List<Product> { product };
 
             _mockFileService.Setup(x => x.GetFromFile())
-                .Returns(new ResponseResult<string>{Success = true,Result = JsonConvert.SerializeObject(existingProduct)});
+                .Returns(new ResponseResult<string> { Success = true, Result = JsonConvert.SerializeObject(existingProduct) });
 
             // Act
             var product2 = new Product
@@ -123,15 +123,16 @@ namespace Resources.Tests.UnitTests
             Assert.True(result.Success);
             Assert.Equal("\nProduct was added successfully!\n", result.Message);
 
-           
+
             existingProductList.Add(newProduct);
 
-            Assert.Equal(2, existingProductList.Count); 
+            Assert.Equal(2, existingProductList.Count);
         }
         [Fact]
         public void UpdateProduct_ShouldReturnTrue_WhenProductIsUpdated()
         {
 
         }
+    }
 }
     
